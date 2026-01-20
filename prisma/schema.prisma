@@ -6,3 +6,56 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum UserRole {
+  ADMIN
+  CLIENT
+  BARBER
+}
+
+enum CategoriesCourt {
+  CUT
+  BEARD
+  CUT_BEARD
+  CUT_BEARD_EYEBROW
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELED
+  COMPLETED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(CLIENT)
+
+  appointments Appointment[] @relation("ClientAppointments")
+  barberAppointments Appointment[] @relation("BarberAppointments")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Appointment {
+  id        String   @id @default(uuid())
+  date      DateTime
+  category  CategoriesCourt
+  status    AppointmentStatus @default(SCHEDULED)
+
+  clientId  String @map("client_id")
+  barberId  String @map("barber_id")
+
+  client    User @relation("ClientAppointments", fields: [clientId], references: [id])
+  barber    User @relation("BarberAppointments", fields: [barberId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([barberId, date])
+  @@map("appointments")
+}
