@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Sistema de agendamento de uma barbearia",
+  "main": "src/server.ts",
+  "scripts": {},
+  "author": "Lucas Vinícius",
+  "license": "ISC"
+}
