@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Sistema de agendamento de uma barbearia",
   "main": "src/server.ts",
-  "scripts": {},
+  "scripts": {
+    "start": "tsx --watch src/server.ts"
+  },
   "author": "Lucas Vinícius",
   "license": "ISC",
   "devDependencies": {
