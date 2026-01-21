@@ -21,7 +21,7 @@ enum CategoriesCourt {
 }
 
 enum AppointmentStatus {
-  SCHEDULED
+  PENDING
   CONFIRMED
   CANCELED
   COMPLETED
@@ -46,7 +46,7 @@ model Appointment {
   id        String   @id @default(uuid())
   date      DateTime
   category  CategoriesCourt
-  status    AppointmentStatus @default(SCHEDULED)
+  status    AppointmentStatus @default(PENDING)
 
   clientId  String @map("client_id")
   barberId  String @map("barber_id")
