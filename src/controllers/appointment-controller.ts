@@ -58,6 +58,43 @@ class AppointmentController {
 
     res.status(201).json();
   }
+
+  async index(req: Request, res: Response) {
+    if (!req.user.id) {
+      throw new AppError("Não autorizado!", 401);
+    }
+
+    const { role, id: userId } = req.user;
+
+    const where: any = {};
+
+    if (role === "CLIENT") {
+      where.clientId = userId;
+    }
+
+    const appointments = await prisma.appointment.findMany({
+      where,
+      orderBy: {
+        date: "asc",
+      },
+      include: {
+        barber: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        client: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    res.json(appointments);
+  }
 }
 
 export { AppointmentController };

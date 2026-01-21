@@ -10,5 +10,6 @@ appointmentRoutes.post(
   allowRoles("CLIENT"),
   appointmentControllers.create,
 );
+appointmentRoutes.get("/", appointmentControllers.index);
 
 export { appointmentRoutes };
