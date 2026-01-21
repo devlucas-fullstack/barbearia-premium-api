@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { AppointmentController } from "@/controllers/appointment-controller";
+import { allowRoles } from "@/middlewares/allow-roles";
 
 const appointmentRoutes = Router();
 const appointmentControllers = new AppointmentController();
 
-appointmentRoutes.post("/", appointmentControllers.create);
+appointmentRoutes.post(
+  "/",
+  allowRoles("CLIENT"),
+  appointmentControllers.create,
+);
 
 export { appointmentRoutes };
