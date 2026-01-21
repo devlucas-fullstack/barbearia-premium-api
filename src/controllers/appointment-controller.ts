@@ -1,8 +1,62 @@
+import { AppError } from "@/utils/AppError";
 import { Request, Response } from "express";
+import { prisma } from "@/database/prisma";
+import { convertToUTC } from "@/utils/convertToUTC";
+import { z } from "zod";
 
 class AppointmentController {
   async create(req: Request, res: Response) {
-    res.json("teste");
+    const bodySchema = z.object({
+      date: z.string().min(1, "Informe uma data válida"),
+      category: z.enum(["CUT", "BEARD", "CUT_BEARD", "CUT_BEARD_EYEBROW"]),
+      barberId: z.string().uuid({ message: "Informe um barbeiro válido!" }),
+    });
+
+    const { date, category, barberId } = bodySchema.parse(req.body);
+
+    const appointmentDate = convertToUTC(date);
+
+    if (!req.user.id) {
+      throw new AppError("Não autorizado!", 401);
+    }
+
+    if (appointmentDate < new Date()) {
+      throw new AppError("Não é possível agendar para uma data passada!");
+    }
+
+    const barber = await prisma.user.findFirst({
+      where: { id: barberId, role: "BARBER" },
+    });
+
+    if (!barber) {
+      throw new AppError("Selecione um barbeiro válido!", 404);
+    }
+
+    const conflict = await prisma.appointment.findFirst({
+      where: {
+        barberId,
+        date: appointmentDate,
+        status: {
+          in: ["PENDING", "CONFIRMED"],
+        },
+      },
+    });
+
+    if (conflict) {
+      throw new AppError("Horário indisponível", 409);
+    }
+
+    await prisma.appointment.create({
+      data: {
+        date: appointmentDate,
+        category,
+        barberId,
+        clientId: req.user.id,
+        status: "PENDING",
+      },
+    });
+
+    res.status(201).json();
   }
 }
 
