@@ -33,7 +33,7 @@ class SessionController {
       subject: String(user.id),
     });
 
-    res.status(201).json({ user, token });
+    return res.status(201).json({ user, token });
   }
 }
 

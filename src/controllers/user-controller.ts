@@ -34,7 +34,7 @@ class UserController {
       },
     });
 
-    res.status(201).json();
+    return res.status(201).json();
   }
 }
 
