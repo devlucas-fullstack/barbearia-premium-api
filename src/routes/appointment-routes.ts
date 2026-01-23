@@ -12,9 +12,14 @@ appointmentRoutes.post(
 );
 appointmentRoutes.get("/", appointmentControllers.index);
 appointmentRoutes.patch(
-  "/:id",
+  "/:id/confirm",
   allowRoles("BARBER", "ADMIN"),
   appointmentControllers.confirm,
+);
+appointmentRoutes.patch(
+  "/:id/canceled",
+  allowRoles("BARBER", "ADMIN"),
+  appointmentControllers.canceled,
 );
 
 export { appointmentRoutes };

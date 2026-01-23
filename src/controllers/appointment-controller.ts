@@ -131,6 +131,40 @@ class AppointmentController {
 
     return res.json();
   }
+
+  async canceled(req: Request, res: Response) {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    });
+
+    const { id } = paramsSchema.parse(req.params);
+    const { role, id: userId } = req.user;
+
+    const appointment = await prisma.appointment.findUnique({ where: { id } });
+
+    if (!appointment) {
+      throw new AppError("Esse agendamento não existe!", 404);
+    }
+
+    if (appointment.status === "COMPLETED") {
+      throw new AppError("Agendamentos concluídos não podem ser cancelados!");
+    }
+
+    if (role === "CLIENT" && appointment.clientId !== userId) {
+      throw new AppError("Você não pode cancelar esse agendamento!", 403);
+    }
+
+    if (role === "BARBER" && appointment.barberId !== userId) {
+      throw new AppError("Você não pode cancelar esse agendamento!", 403);
+    }
+
+    await prisma.appointment.update({
+      where: { id },
+      data: { status: "CANCELED" },
+    });
+
+    return res.json();
+  }
 }
 
 export { AppointmentController };
