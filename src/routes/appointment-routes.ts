@@ -11,5 +11,10 @@ appointmentRoutes.post(
   appointmentControllers.create,
 );
 appointmentRoutes.get("/", appointmentControllers.index);
+appointmentRoutes.patch(
+  "/:id",
+  allowRoles("BARBER", "ADMIN"),
+  appointmentControllers.confirm,
+);
 
 export { appointmentRoutes };

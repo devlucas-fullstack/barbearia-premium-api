@@ -56,7 +56,7 @@ class AppointmentController {
       },
     });
 
-    res.status(201).json();
+    return res.status(201).json();
   }
 
   async index(req: Request, res: Response) {
@@ -93,7 +93,43 @@ class AppointmentController {
       },
     });
 
-    res.json(appointments);
+    return res.json(appointments);
+  }
+
+  async confirm(req: Request, res: Response) {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    });
+
+    const { id } = paramsSchema.parse(req.params);
+    const { role, id: userId } = req.user;
+
+    if (role !== "BARBER" && role !== "ADMIN") {
+      throw new AppError("Apenas barbeiros podem confirmar agendamento!", 403);
+    }
+
+    const appointment = await prisma.appointment.findUnique({ where: { id } });
+
+    if (!appointment) {
+      throw new AppError("Esse agendamento não existe!", 404);
+    }
+
+    if (appointment.status !== "PENDING") {
+      throw new AppError(
+        "Somente agendamentos pendentes podem ser confirmados!",
+      );
+    }
+
+    if (role === "BARBER" && appointment.barberId !== userId) {
+      throw new AppError("Você não pode confirma esse agendamento!", 403);
+    }
+
+    await prisma.appointment.update({
+      where: { id },
+      data: { status: "CONFIRMED" },
+    });
+
+    return res.json();
   }
 }
 
