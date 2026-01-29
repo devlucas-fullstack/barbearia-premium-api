@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { prisma } from "@/database/prisma";
 import { convertToUTC } from "@/utils/convertToUTC";
 import { z } from "zod";
+import { appointmentToPT } from "@/mappers/appointment-mapper";
 
 class AppointmentController {
   async create(req: Request, res: Response) {
@@ -93,7 +94,7 @@ class AppointmentController {
       },
     });
 
-    return res.json(appointments);
+    return res.json(appointments.map(appointmentToPT));
   }
 
   async confirm(req: Request, res: Response) {
