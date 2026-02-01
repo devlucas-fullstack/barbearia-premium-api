@@ -18,7 +18,7 @@ appointmentRoutes.patch(
 );
 appointmentRoutes.patch(
   "/:id/canceled",
-  allowRoles("BARBER", "ADMIN"),
+  allowRoles("BARBER", "ADMIN", "CLIENT"),
   appointmentControllers.canceled,
 );
 
