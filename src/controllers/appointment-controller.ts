@@ -155,12 +155,14 @@ class AppointmentController {
       throw new AppError("Agendamentos concluídos não podem ser cancelados!");
     }
 
-    if (role === "CLIENT" && appointment.clientId !== userId) {
-      throw new AppError("Você não pode cancelar esse agendamento!", 403);
-    }
+    if (role !== "ADMIN") {
+      if (role === "CLIENT" && appointment.clientId !== userId) {
+        throw new AppError("Você não pode cancelar esse agendamento!", 403);
+      }
 
-    if (role === "BARBER" && appointment.barberId !== userId) {
-      throw new AppError("Você não pode cancelar esse agendamento!", 403);
+      if (role === "BARBER" && appointment.barberId !== userId) {
+        throw new AppError("Você não pode cancelar esse agendamento!", 403);
+      }
     }
 
     await prisma.appointment.update({
