@@ -71,6 +71,10 @@ class AppointmentController {
 
     if (role === "CLIENT") {
       where.clientId = userId;
+
+      where.status = {
+        not: "CANCELED",
+      };
     }
 
     const appointments = await prisma.appointment.findMany({
