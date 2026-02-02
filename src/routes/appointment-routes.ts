@@ -21,5 +21,10 @@ appointmentRoutes.patch(
   allowRoles("BARBER", "ADMIN", "CLIENT"),
   appointmentControllers.canceled,
 );
+appointmentRoutes.get(
+  "/dashboard",
+  allowRoles("BARBER", "ADMIN"),
+  appointmentControllers.dashboard,
+);
 
 export { appointmentRoutes };

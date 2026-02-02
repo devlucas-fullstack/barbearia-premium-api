@@ -172,6 +172,17 @@ class AppointmentController {
 
     return res.json();
   }
+
+  async dashboard(req: Request, res: Response) {
+    const [total, confirmed, pending, canceled] = await Promise.all([
+      prisma.appointment.count(),
+      prisma.appointment.count({ where: { status: "CONFIRMED" } }),
+      prisma.appointment.count({ where: { status: "PENDING" } }),
+      prisma.appointment.count({ where: { status: "CANCELED" } }),
+    ]);
+
+    return res.json({ total, confirmed, pending, canceled });
+  }
 }
 
 export { AppointmentController };
