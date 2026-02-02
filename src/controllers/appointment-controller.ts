@@ -66,6 +66,7 @@ class AppointmentController {
     }
 
     const { role, id: userId } = req.user;
+    const { status, date } = req.query;
 
     const where: any = {};
 
@@ -74,6 +75,20 @@ class AppointmentController {
 
       where.status = {
         not: "CANCELED",
+      };
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (date) {
+      const start = new Date(`${date}T00:00:00.000Z`);
+      const end = new Date(`${date}T23:59:59.999Z`);
+
+      where.date = {
+        gte: start,
+        lte: end,
       };
     }
 
